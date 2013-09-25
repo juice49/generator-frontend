@@ -6,6 +6,8 @@
 var
   util = require('util'),
   path = require('path'),
+  exec = require('child_process').exec,
+  async = require('async'),
   yeoman = require('yeoman-generator'),
   FrontendGenerator;
 
@@ -14,17 +16,46 @@ var
 
 FrontendGenerator = module.exports = function FrontendGenerator(args, options, config) {
 
+	var _this = this;
+
   yeoman.generators.Base.apply(this, arguments);
 
   this.on('end', function () {
-    this.installDependencies({ skipInstall: options['skip-install'] });
+    this.installDependencies({
+    	skipInstall: options['skip-install'],
+    	callback: function() {
+    		this.emit('dependenciesInstalled');
+    	}.bind(this)
+    });
   });
+
+  this.on('dependenciesInstalled', function() {
+  	async.series([grunt, gitInit]);
+  });
+
+  function grunt(cb) {
+		exec('grunt', function(err, stdout, stderr) {
+			if(err) console.log(err);
+			if(stderr) console.log(stderr);
+			if(stdout) console.log(stdout);
+			cb(null);
+		});
+  }
+
+	function gitInit(cb) {
+		if(_this.git) {
+			exec('git init && git add . && git commit -am "Initial commit"', function(err, stdout, stderr) {
+				if(err) console.log(err);
+				if(stderr) console.log(stderr);
+				if(stdout) console.log(stdout);
+				cb(null);
+			});
+		}
+	}
 
   this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
 
-};
-
-util.inherits(FrontendGenerator, yeoman.generators.Base);
+}; util.inherits(FrontendGenerator, yeoman.generators.Base);
 
 
 
@@ -38,27 +69,56 @@ FrontendGenerator.prototype.askFor = function askFor() {
   var prompts = [
     {
       name: 'projectName',
-      message: 'What would you like to call this project?'
+      message: 'What would you like to call this project?',
+      default: 'My Awesome Project'
     },
     {
       name: 'useJade',
       type: 'confirm',
       message: 'Would you like to use Jade?',
-      default: true
+      default: false
     },
     {
       name: 'useJquery',
       type: 'confirm',
       message: 'Would you like to use jQuery?',
       default: false
+    },
+    {
+      when: function(response) {
+        return response.useJquery;
+      },
+      name: 'jQueryVersion',
+      message: 'What version of jQuery?',
+      default: '1.9.1'
+    },
+    {
+      name: 'autoprefixerVersions',
+      message: 'How many browser versions back should Autoprefixer patch for?',
+      default: 2
+    },
+    {
+      name: 'git',
+      message: 'Would you like me to initialise a git repository?',
+      default: true
     }
   ];
 
   this.prompt(prompts, function(props) {
+
     this.projectName = props.projectName;
     this.useJade = props.useJade;
     this.useJquery = props.useJquery;
+
+    if(props.jQueryVersion) {
+      this.jQueryVersion = props.jQueryVersion;
+    }
+    
+    this.autoprefixerVersions = props.autoprefixerVersions;
+    this.git = props.git;
+
     cb();
+
   }.bind(this));
 
 };
@@ -88,13 +148,17 @@ FrontendGenerator.prototype.projectfiles = function projectfiles() {
 
   this.template('_package.json', 'package.json');
   this.template('_bower.json', 'bower.json');
+  this.template('_gruntfile.js', 'gruntfile.js');
   this.copy('gitignore', '.gitignore');
   this.copy('bowerrc', '.bowerrc');
+  this.copy('css/app.styl', 'css/app.styl');
+  this.copy('js/app.js', 'js/app.js');
 
   if(this.useJade) {
-    this.template('_base.jade', 'views/layouts/base.jade');
+    this.template('views/layouts/_base.jade', 'views/layouts/base.jade');
+    this.template('views/_index.jade', 'views/index.jade');
   } else {
-    this.template('_index.html', 'index.html');
+    this.template('views/_index.html', 'index.html');
   }
 
 };
