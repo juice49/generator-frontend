@@ -2,7 +2,8 @@
   "name": "<%= _.slugify(projectName) %>",
   "version": "0.0.0",
   "dependencies": {
-  	<% if(useJquery) { %>"jQuery": "<%= jQueryVersion %>"<% } %>
+  	<% if(useJquery) { %>"jquery": "http://code.jquery.com/jquery-<%= jQueryVersion %>.min.js",<% } %>
+  	"normalize-css": "*"
   }
 }
 

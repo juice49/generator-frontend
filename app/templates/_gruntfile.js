@@ -92,7 +92,7 @@ module.exports = function(grunt) {
 
 				files: {
 					'build/app.js': [
-						<% if(useJquery) { %>'components/jquery/jquery.js',<% } %>
+						<% if(useJquery) { %>'components/jquery/index.js',<% } %>
 						'js/app.js'
 					]
 				}
