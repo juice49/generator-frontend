@@ -9,6 +9,7 @@ var
   exec = require('child_process').exec,
   async = require('async'),
   yeoman = require('yeoman-generator'),
+  _ = require('lodash'),
   FrontendGenerator;
 
 
@@ -62,7 +63,9 @@ FrontendGenerator = module.exports = function FrontendGenerator(args, options, c
 
 FrontendGenerator.prototype.askFor = function askFor() {
 
-  var cb = this.async();
+  var
+    _this = this,
+    cb = this.async();
 
   console.log(this.yeoman);
 
@@ -85,17 +88,30 @@ FrontendGenerator.prototype.askFor = function askFor() {
       default: false
     },
     {
-      when: function(response) {
-        return response.useJquery;
+      when: function(res) {
+        return res.useJquery;
       },
       name: 'jQueryVersion',
       message: 'What version of jQuery?',
-      default: '1.9.1'
+      default: '1.10.2'
     },
     {
       name: 'autoprefixerVersions',
       message: 'How many browser versions back should Autoprefixer patch for?',
       default: 2
+    },
+    {
+      name: 'useLivereload',
+      message: 'Would you like to use live reload?',
+      default: false
+    },
+    {
+      when: function(res) {
+        return res.useLivereload
+      },
+      name: 'livereloadPort',
+      message: 'What port should live reload use?',
+      default: 35729
     },
     {
       name: 'git',
@@ -106,9 +122,13 @@ FrontendGenerator.prototype.askFor = function askFor() {
 
   this.prompt(prompts, function(props) {
 
-    this.projectName = props.projectName;
+    /*this.projectName = props.projectName;
     this.useJade = props.useJade;
-    this.useJquery = props.useJquery;
+    this.useJquery = props.useJquery;*/
+
+    _(props).forEach(function(value, prop) {
+      _this[prop] = value;
+    });
 
     if(props.jQueryVersion) {
       this.jQueryVersion = props.jQueryVersion;

@@ -108,7 +108,10 @@ module.exports = function(grunt) {
 
 			css: {
 				files: ['css/**'],
-				tasks: ['css']
+				tasks: ['css'],
+				options: {<% if(useLivereload) { %>
+					livereload: <%= livereloadPort %>
+				<% } %>}
 			},
 
 			js: {
@@ -119,9 +122,9 @@ module.exports = function(grunt) {
 			html: {
 				files: ['views/**'],
 				tasks: ['html']
-			},
+			},<% } %>
 
-			<% } %>all: {
+			all: {
 				files: ['gruntfile.js'],
 				tasks: ['default']
 			}

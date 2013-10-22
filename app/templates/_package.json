@@ -5,8 +5,8 @@
 	"devDependencies": {
 		"grunt": "*",
 		"grunt-contrib-watch": "*",
-		"grunt-contrib-stylus": "*",
-		<% if(useJade) { %>"grunt-contrib-jade": "*",<% } %>
+		"grunt-contrib-stylus": "*",<% if(useJade) { %>
+		"grunt-contrib-jade": "*",<% } %>
 		"grunt-contrib-uglify": "*",
 		"grunt-autoprefixer": "*",
 		"bower": "*",

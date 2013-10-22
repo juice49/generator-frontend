@@ -20,3 +20,4 @@ html
 	body
 		block content
 		script(src='/build/app.js')
+		<% if(useLivereload) { %>script(src='//localhost:<%= livereloadPort %>/livereload.js')<% } %>
