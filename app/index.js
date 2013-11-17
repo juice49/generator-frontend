@@ -103,7 +103,7 @@ FrontendGenerator.prototype.askFor = function askFor() {
     {
       name: 'useLivereload',
       message: 'Would you like to use live reload?',
-      default: false
+      default: true
     },
     {
       when: function(res) {
@@ -122,20 +122,9 @@ FrontendGenerator.prototype.askFor = function askFor() {
 
   this.prompt(prompts, function(props) {
 
-    /*this.projectName = props.projectName;
-    this.useJade = props.useJade;
-    this.useJquery = props.useJquery;*/
-
     _(props).forEach(function(value, prop) {
       _this[prop] = value;
     });
-
-    if(props.jQueryVersion) {
-      this.jQueryVersion = props.jQueryVersion;
-    }
-    
-    this.autoprefixerVersions = props.autoprefixerVersions;
-    this.git = props.git;
 
     cb();
 
@@ -172,6 +161,7 @@ FrontendGenerator.prototype.projectfiles = function projectfiles() {
   this.copy('gitignore', '.gitignore');
   this.copy('bowerrc', '.bowerrc');
   this.copy('css/app.styl', 'css/app.styl');
+  this.copy('css/dependencies.styl', 'css/dependencies.styl');
   this.copy('js/app.js', 'js/app.js');
 
   if(this.useJade) {
