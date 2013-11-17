@@ -162,6 +162,7 @@ FrontendGenerator.prototype.projectfiles = function projectfiles() {
   this.copy('bowerrc', '.bowerrc');
   this.copy('css/app.styl', 'css/app.styl');
   this.copy('css/dependencies.styl', 'css/dependencies.styl');
+  this.copy('css/styleguide.styl', 'css/styleguide.styl');
   this.copy('js/app.js', 'js/app.js');
 
   if(this.useJade) {
