@@ -10,3 +10,7 @@ This is a Yeoman generator to help kick off frontend web development projects. I
 - Optionally include jQuery (at specified version)
 - Optionally use livereload (on specified port)
 - Optionally initialise a new Git repo
+
+## Todo
+- Create Gulp version
+- Implement [CSSO](http://css.github.io/csso/)
