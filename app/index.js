@@ -166,6 +166,7 @@ FrontendGenerator.prototype.projectfiles = function projectfiles() {
   this.copy('js/app.js', 'js/app.js');
 
   if(this.useJade) {
+    this.template('views/partials/_html.jade', 'views/partials/html.jade');
     this.template('views/layouts/_base.jade', 'views/layouts/base.jade');
     this.template('views/_index.jade', 'views/index.jade');
   } else {
