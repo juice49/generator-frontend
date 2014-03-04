@@ -1,134 +1,61 @@
-'use strict';
-
-
-
-
 var
   util = require('util'),
-  path = require('path'),
-  exec = require('child_process').exec,
+  git = require('gift'),
   async = require('async'),
   yeoman = require('yeoman-generator'),
-  _ = require('lodash'),
-  FrontendGenerator;
+  prompts = require('./prompts'),
+  dependencies = require('./dependencies'),
+  devDependencies = require('./devDependencies'),
+  _ = require('lodash');
 
 
 
 
-FrontendGenerator = module.exports = function FrontendGenerator(args, options, config) {
+/**
+ * Frontend Generator
+ */
+var FrontendGenerator = module.exports = function(args, options, config) {
 
 	var _this = this;
 
   yeoman.generators.Base.apply(this, arguments);
 
   this.on('end', function () {
-
     async.parallel([
       function(cb) {
-        return _this.npmInstall(['gulp'], { 'save-dev': true }, cb);
+        return _this.npmInstall(devDependencies, { 'save-dev': true }, cb);
       },
       function(cb) {
-        return _this.npmInstall([
-          'necolas/normalize.css',
-          'juice49/StylusMicroClearfix',
-          'juice49/stylus-inline-block'
-        ], { save: true }, cb);
+        return _this.npmInstall(dependencies, { save: true }, cb);
       }
     ], function() {
       _this.emit('dependenciesInstalled');
     });
-
   });
 
   this.on('dependenciesInstalled', function() {
-  	async.series([grunt, gitInit]);
+  	if(_this.git) {
+      gitInit();
+    }
   });
 
-  function grunt(cb) {
-		exec('grunt', function(err, stdout, stderr) {
-			if(err) console.log(err);
-			if(stderr) console.log(stderr);
-			if(stdout) console.log(stdout);
-			cb(null);
-		});
-  }
+};
 
-	function gitInit(cb) {
-		if(_this.git) {
-			exec('git init && git add . && git commit -am "Initial commit"', function(err, stdout, stderr) {
-				if(err) console.log(err);
-				if(stderr) console.log(stderr);
-				if(stdout) console.log(stdout);
-				cb(null);
-			});
-		}
-	}
-
-  this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
-
-}; util.inherits(FrontendGenerator, yeoman.generators.Base);
+util.inherits(FrontendGenerator, yeoman.generators.Base);
 
 
 
 
-FrontendGenerator.prototype.askFor = function askFor() {
+/**
+ * Ask For
+ */
+FrontendGenerator.prototype.askFor = function() {
 
   var
     _this = this,
     cb = this.async();
 
   console.log(this.yeoman);
-
-  var prompts = [
-    {
-      name: 'projectName',
-      message: 'What would you like to call this project?',
-      default: 'My Awesome Project'
-    },
-    {
-      name: 'useJade',
-      type: 'confirm',
-      message: 'Would you like to use Jade?',
-      default: false
-    },
-    {
-      name: 'useJquery',
-      type: 'confirm',
-      message: 'Would you like to use jQuery?',
-      default: false
-    },
-    {
-      when: function(res) {
-        return res.useJquery;
-      },
-      name: 'jQueryVersion',
-      message: 'What version of jQuery?',
-      default: '1.10.2'
-    },
-    {
-      name: 'autoprefixerVersions',
-      message: 'How many browser versions back should Autoprefixer patch for?',
-      default: 2
-    },
-    {
-      name: 'useLivereload',
-      message: 'Would you like to use live reload?',
-      default: true
-    },
-    {
-      when: function(res) {
-        return res.useLivereload
-      },
-      name: 'livereloadPort',
-      message: 'What port should live reload use?',
-      default: 35729
-    },
-    {
-      name: 'git',
-      message: 'Would you like me to initialise a git repository?',
-      default: true
-    }
-  ];
 
   this.prompt(prompts, function(props) {
 
@@ -138,14 +65,19 @@ FrontendGenerator.prototype.askFor = function askFor() {
 
     cb();
 
-  }.bind(this));
+  });
 
 };
 
 
 
 
-FrontendGenerator.prototype.app = function app() {
+/**
+ * Project Files
+ *
+ * Create directory structure for project and copy files.
+ */
+FrontendGenerator.prototype.projectfiles = function() {
 
   this.mkdir('js');
   this.mkdir('css');
@@ -153,34 +85,44 @@ FrontendGenerator.prototype.app = function app() {
   this.mkdir('components');
   this.mkdir('build');
 
+  this.template('package.json');
+  this.copy('gitignore', '.gitignore');
+  this.copy('css/app.styl');
+  this.copy('css/dependencies.styl');
+  this.copy('js/app.js');
+
   if(this.useJade) {
     this.mkdir('views');
     this.mkdir('views/layouts');
-  }
-
-};
-
-
-
-
-FrontendGenerator.prototype.projectfiles = function projectfiles() {
-
-  this.template('_package.json', 'package.json');
-  this.template('_bower.json', 'bower.json');
-  this.template('_gruntfile.js', 'gruntfile.js');
-  this.copy('gitignore', '.gitignore');
-  this.copy('bowerrc', '.bowerrc');
-  this.copy('css/app.styl', 'css/app.styl');
-  this.copy('css/dependencies.styl', 'css/dependencies.styl');
-  this.copy('css/styleguide.styl', 'css/styleguide.styl');
-  this.copy('js/app.js', 'js/app.js');
-
-  if(this.useJade) {
-    this.template('views/partials/_html.jade', 'views/partials/html.jade');
-    this.template('views/layouts/_base.jade', 'views/layouts/base.jade');
-    this.template('views/_index.jade', 'views/index.jade');
+    this.template('views/partials/html.jade');
+    this.template('views/layouts/base.jade');
+    this.template('views/index.jade');
   } else {
-    this.template('views/_index.html', 'index.html');
+    this.template('views/index.html');
   }
 
 };
+
+
+
+
+/**
+ * Git Init
+ *
+ * Init repo in current directory
+ * Add all files
+ * Commit `Initial`
+ */
+function gitInit() {
+  git.init('./', function(err, repo) {
+    async.series([
+      function(cb) {
+        return repo.add('.', cb);
+      },
+      function(cb) {
+        repo.commit('Initial', { all: true });
+        return cb();
+      }
+    ]);
+  });
+}
