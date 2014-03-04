@@ -9,8 +9,7 @@
   "bugs": "https://github.com/juice49/generator-frontend/issues",
   "author": {
     "name": "Ash",
-    "email": "",
-    "url": "https://github.com/juice49"
+    "url": "http://ash.gd"
   },
   "main": "app/index.js",
   "repository": {
@@ -34,10 +33,5 @@
   "engines": {
     "node": ">=0.8.0",
     "npm": ">=1.2.10"
-  },
-  "licenses": [
-    {
-      "type": "MIT"
-    }
-  ]
+  }
 }
