@@ -1,16 +1,5 @@
 {
 	"name": "<%= _.slugify(projectName) %>",
 	"private": true,
-	"version": "0.0.0",
-	"devDependencies": {
-		"grunt": "*",
-		"grunt-contrib-watch": "*",
-		"grunt-contrib-stylus": "*",<% if(useJade) { %>
-		"grunt-contrib-jade": "*",<% } %>
-		"grunt-contrib-uglify": "*",
-		"grunt-autoprefixer": "*",
-		"bower": "*",
-		"grunt-image-embed": "*",
-		"grunt-contrib-cssmin": "*"
-	}
+	"version": "0.0.0"
 }

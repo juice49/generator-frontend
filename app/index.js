@@ -22,12 +22,22 @@ FrontendGenerator = module.exports = function FrontendGenerator(args, options, c
   yeoman.generators.Base.apply(this, arguments);
 
   this.on('end', function () {
-    this.installDependencies({
-    	skipInstall: options['skip-install'],
-    	callback: function() {
-    		this.emit('dependenciesInstalled');
-    	}.bind(this)
+
+    async.parallel([
+      function(cb) {
+        return _this.npmInstall(['gulp'], { 'save-dev': true }, cb);
+      },
+      function(cb) {
+        return _this.npmInstall([
+          'necolas/normalize.css',
+          'juice49/StylusMicroClearfix',
+          'juice49/stylus-inline-block'
+        ], { save: true }, cb);
+      }
+    ], function() {
+      _this.emit('dependenciesInstalled');
     });
+
   });
 
   this.on('dependenciesInstalled', function() {
