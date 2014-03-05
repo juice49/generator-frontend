@@ -34,7 +34,7 @@ var FrontendGenerator = module.exports = function(args, options, config) {
   });
 
   this.on('dependenciesInstalled', function() {
-  	if(_this.git) {
+    if(_this.git) {
       gitInit();
     }
   });
