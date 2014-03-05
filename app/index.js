@@ -23,14 +23,15 @@ var FrontendGenerator = module.exports = function(args, options, config) {
   this.on('end', function () {
     async.parallel([
       function(cb) {
-        return _this.npmInstall(devDependencies, { 'save-dev': true }, cb);
+        return _this.npmInstall(devDependencies(_this), { 'save-dev': true }, cb);
       },
       function(cb) {
-        return _this.npmInstall(dependencies, { save: true }, cb);
+        return _this.npmInstall(dependencies(_this), { save: true }, cb);
       }
     ], function() {
       _this.emit('dependenciesInstalled');
     });
+
   });
 
   this.on('dependenciesInstalled', function() {
@@ -86,14 +87,13 @@ FrontendGenerator.prototype.projectfiles = function() {
   this.mkdir('build');
 
   this.template('package.json');
+  this.template('gulpfile.js');
   this.copy('gitignore', '.gitignore');
   this.copy('css/app.styl');
   this.copy('css/dependencies.styl');
   this.copy('js/app.js');
 
   if(this.useJade) {
-    this.mkdir('views');
-    this.mkdir('views/layouts');
     this.template('views/partials/html.jade');
     this.template('views/layouts/base.jade');
     this.template('views/index.jade');

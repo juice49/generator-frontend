@@ -8,7 +8,7 @@ module.exports = [
     name: 'useJade',
     type: 'confirm',
     message: 'Would you like to use Jade?',
-    default: false
+    default: true
   },
   {
     name: 'useJquery',
@@ -36,7 +36,7 @@ module.exports = [
   },
   {
     when: function(res) {
-      return res.useLivereload
+      return res.useLivereload;
     },
     name: 'livereloadPort',
     message: 'What port should live reload use?',

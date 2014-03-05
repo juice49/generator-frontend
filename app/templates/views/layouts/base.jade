@@ -1,5 +1,5 @@
 doctype html
-include partials/html
+include ../partials/html
 head
 	meta(charset='utf-8')
 	title <%= _.capitalize(projectName) %>
@@ -12,4 +12,3 @@ head
 body
 	block content
 	script(src='/build/app.js')
-	<% if(useLivereload) { %>script(src='//localhost:<%= livereloadPort %>/livereload.js')<% } %>
