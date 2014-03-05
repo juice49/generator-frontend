@@ -1,36 +1,45 @@
 var
-  gulp = require('gulp'),<% if(useJade) { %>
+  gulp = require('gulp'),
+  gutil = require('gulp-util'),<% if(useJade) { %>
   jade = require('gulp-jade'),
   <% } %>stylus = require('gulp-stylus'),<% if(useLivereload) { %>
   livereload = require('gulp-livereload'),
   <% } %>
   autoprefixer = require('gulp-autoprefixer'),
   csso = require('gulp-csso'),
-  uglify = require('gulp-uglify');
+  uglify = require('gulp-uglify'),
+  httpServer = require('http-server');
 
-gulp.task('default', function() {
+gulp.task('default', ['css', 'js', 'html']);
 
-  var watchers = [
-    gulp.watch('css/**/*', ['css']),
-    gulp.watch('js/**/*', ['js']),
-    gulp.watch('views/**/*', ['html'])
-  ];
+gulp.task('watch', function() {
+
+  gulp.watch('css/**/*', ['css']);
+  gulp.watch('js/**/*', ['js']);
+  gulp.watch('views/**/*', ['html']);
+
+  gutil.log('Watching files...');
   <% if(useLivereload) { %>
-  var server = livereload();
+  var
+    lrWatcher = gulp.watch(['build/**', '*.html']),
+    server = livereload(<%= livereloadPort %>);
 
-  watchers.forEach(function(watcher) {
-    watcher.on('change', function(file) {
-      server.changed(file.path);
-    });
+  lrWatcher.on('change', function(file) {
+    server.changed(file.path);
   });
-<% } %>
+  <% } %>
+  httpServer.createServer({ root: './' })
+    .listen(1337, '0.0.0.0', function() {
+      gutil.log('HTTP server running on:', gutil.colors.cyan('1337'));
+    });
+
 });
 
 gulp.task('css', function() {
   return gulp.src('css/app.styl')
     .pipe(stylus({
-        paths: ['node_modules', 'css'],
-        'include css': true
+      paths: ['node_modules', 'css'],
+      set: ['include css']
     }))
     .pipe(autoprefixer('last <%= autoprefixerVersions %> version', '> 1%', 'ie 8', 'ie 7'))
     .pipe(csso())
@@ -39,7 +48,7 @@ gulp.task('css', function() {
 
 gulp.task('js', function() {
   return gulp.src('js/app.js')
-    .pipe('uglify')
+    .pipe(uglify())
     .pipe(gulp.dest('./build/'));
 });
 

@@ -2,10 +2,12 @@ module.exports = function(yo) {
 
   var devDependencies = [
     'gulp',
+    'gulp-util',
     'gulp-stylus',
     'gulp-autoprefixer',
     'gulp-csso',
-    'gulp-uglify'
+    'gulp-uglify',
+    'http-server'
   ];
 
   if(yo.useJade) {
