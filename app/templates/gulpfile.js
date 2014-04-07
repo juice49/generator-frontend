@@ -1,59 +1,128 @@
 var
   gulp = require('gulp'),
-  gutil = require('gulp-util'),<% if(useJade) { %>
+  gutil = require('gulp-util'),
+  source = require('vinyl-source-stream'),
+  streamify = require('gulp-streamify'),
+  plumber = require('gulp-plumber'),
   jade = require('gulp-jade'),
-  <% } %>stylus = require('gulp-stylus'),<% if(useLivereload) { %>
+  stylus = require('gulp-stylus'),
   livereload = require('gulp-livereload'),
-  <% } %>
   autoprefixer = require('gulp-autoprefixer'),
   csso = require('gulp-csso'),
+  browserify = require('browserify'),
+  es6ify = require('es6ify'),
   uglify = require('gulp-uglify'),
-  httpServer = require('http-server');
+  httpServer = require('http-server'),
+  config = {},
+  paths = {};
 
-gulp.task('default', ['css', 'js', 'html']);
 
-gulp.task('watch', function() {
 
+config = {
+  livereloadPort: <%= livereloadPort %>,
+  httpPort: <%= httpPort %>
+};
+
+
+
+paths = {
+  build: './build/'
+};
+
+
+
+function errorHandler() {
+  return plumber({
+    errorHandler: function(err) {
+      gutil.beep();
+      gutil.log(gutil.colors.red(err));
+      this.emit('end');
+    }
+  });
+}
+
+
+
+gulp.task('watch', ['default', 'serve'], function() {
+  
+  var lr, lrWatcher;
+  
+  // Watch source files to trigger build
   gulp.watch('css/**/*', ['css']);
   gulp.watch('js/**/*', ['js']);
   gulp.watch('views/**/*', ['html']);
-
-  gutil.log('Watching files...');
-  <% if(useLivereload) { %>
-  var
-    lrWatcher = gulp.watch(['build/**', '*.html']),
-    server = livereload(<%= livereloadPort %>);
+  
+  // Watch built files to trigger livereload
+  lr = livereload(config.livereloadPort);
+  lrWatcher = gulp.watch(['build/**', '*.html']);
 
   lrWatcher.on('change', function(file) {
-    server.changed(file.path);
+    lr.changed(file.path);
   });
-  <% } %>
-  httpServer.createServer({ root: './' })
-    .listen(1337, '0.0.0.0', function() {
-      gutil.log('HTTP server running on:', gutil.colors.cyan('1337'));
-    });
 
 });
+
+
+
+gulp.task('serve', function() {
+
+  var server = httpServer.createServer({ root: './' });
+
+  server.listen(config.httpPort, '0.0.0.0', function() {
+    gutil.log('HTTP server running on:', gutil.colors.cyan(config.httpPort));
+  });
+
+});
+
+
 
 gulp.task('css', function() {
+  
+  var stylusConfig = {
+    paths: ['node_modules', 'css'],
+    set: ['include css']
+  };
+  
   return gulp.src('css/app.styl')
-    .pipe(stylus({
-      paths: ['node_modules', 'css'],
-      set: ['include css']
-    }))
+    .pipe(errorHandler())
+    .pipe(stylus(stylusConfig))
     .pipe(autoprefixer('last <%= autoprefixerVersions %> version', '> 1%', 'ie 8', 'ie 7'))
     .pipe(csso())
-    .pipe(gulp.dest('./build/'));
+    .pipe(gulp.dest(paths.build));
+    
 });
+
+
 
 gulp.task('js', function() {
-  return gulp.src('js/app.js')
-    .pipe(uglify())
-    .pipe(gulp.dest('./build/'));
+
+	var bundle = browserify('./js/index.js')
+		.add(es6ify.runtime)
+		.transform(es6ify)
+		.bundle();
+
+	bundle.on('error', function(err) {
+		gutil.beep();
+		gutil.log(gutil.colors.red(err));
+		this.emit('end');
+	});
+
+	return bundle
+		.pipe(source('index.js'))
+		.pipe(streamify(uglify()))
+		.pipe(gulp.dest(paths.build));
+
 });
 
-<% if(useJade) { %>gulp.task('html', function() {
-  return gulp.src('views/*.jade')
+
+
+gulp.task('html', function() {
+  return gulp.src('./views/*.jade')
+    .pipe(errorHandler())
     .pipe(jade())
     .pipe(gulp.dest('./'));
-});<% } %>
+});
+
+
+
+gulp.task('default', ['css', 'js', 'html']);

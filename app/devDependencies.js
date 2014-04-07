@@ -1,23 +1,19 @@
 module.exports = function(yo) {
-
-  var devDependencies = [
+  return  [
     'gulp',
     'gulp-util',
+    'vinyl-source-stream',
+    'gulp-streamify',
+    'gulp-plumber',
+    'gulp-livereload',
     'gulp-stylus',
     'gulp-autoprefixer',
     'gulp-csso',
+    'browserify',
+    'es6ify',
     'gulp-uglify',
-    'http-server'
+    'http-server',
+    'gulp-jade',
+    'gulp-livereload'
   ];
-
-  if(yo.useJade) {
-    devDependencies.push('gulp-jade');
-  }
-
-  if(yo.useLivereload) {
-    devDependencies.push('gulp-livereload');
-  }
-
-  return devDependencies;
-
 };

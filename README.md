@@ -4,17 +4,19 @@ This is a Yo generator to help kick off frontend web development projects. It's 
 
 ## Features
 
-### Always:
-- Process CSS with Stylus
+- Build Stylus
 - Autoprefix CSS
-- Uglify and CSSMin
-
-### Optionally:
-- Use Jade
-- Include jQuery (at specified version)
-- Use livereload (on specified port)
+- Optimise and minify CSS with CSSO
+- Build JS with Browserify and es6ify
+- Uglify JS
+- Build Jade
+- <del>Include jQuery (at specified version)</del>
+- Create a livereload server
+- Create a development HTTP server
 - Initialise a new Git repo
 
 ## Todo
-- Create Gulp version
-- Implement [CSSO](http://css.github.io/csso/)
+
+- Modularise gulpfile
+- Update jQuery inclusion
+- Try [Slush](http://klei.github.io/slush/) ..??

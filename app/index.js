@@ -91,15 +91,11 @@ FrontendGenerator.prototype.projectfiles = function() {
   this.copy('gitignore', '.gitignore');
   this.copy('css/app.styl');
   this.copy('css/dependencies.styl');
-  this.copy('js/app.js');
+  this.copy('js/index.js');
 
-  if(this.useJade) {
-    this.template('views/partials/html.jade');
-    this.template('views/layouts/base.jade');
-    this.template('views/index.jade');
-  } else {
-    this.template('views/index.html');
-  }
+  this.template('views/partials/html.jade');
+  this.template('views/layouts/base.jade');
+  this.template('views/index.jade');
 
 };
 

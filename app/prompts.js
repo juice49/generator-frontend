@@ -5,12 +5,6 @@ module.exports = [
     default: 'My Awesome Project'
   },
   {
-    name: 'useJade',
-    type: 'confirm',
-    message: 'Would you like to use Jade?',
-    default: true
-  },
-  {
     name: 'useJquery',
     type: 'confirm',
     message: 'Would you like to use jQuery?',
@@ -30,14 +24,11 @@ module.exports = [
     default: 2
   },
   {
-    name: 'useLivereload',
-    message: 'Would you like to use live reload?',
-    default: true
+    name: 'httpPort',
+    message: 'What port should the development server use?',
+    default: 1337
   },
   {
-    when: function(res) {
-      return res.useLivereload;
-    },
     name: 'livereloadPort',
     message: 'What port should live reload use?',
     default: 35729
