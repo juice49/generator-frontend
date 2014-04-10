@@ -20,3 +20,4 @@ This is a Yo generator to help kick off frontend web development projects. It's 
 - Modularise gulpfile
 - Update jQuery inclusion
 - Try [Slush](http://klei.github.io/slush/) ..??
+- Source maps?
