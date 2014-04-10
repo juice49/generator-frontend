@@ -96,10 +96,11 @@ gulp.task('css', function() {
 
 gulp.task('js', function() {
 
-	var bundle = browserify('./js/index.js')
-		.add(es6ify.runtime)
-		.transform(es6ify)
-		.bundle();
+	var bundle = browserify()
+    .add(es6ify.runtime)
+    .transform(es6ify)
+    .require(require.resolve('./js/index.js'), { entry: true })
+    .bundle();
 
 	bundle.on('error', function(err) {
 		gutil.beep();
