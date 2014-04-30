@@ -80,7 +80,7 @@ gulp.task('css', function() {
   
   var stylusConfig = {
     paths: ['node_modules', 'css'],
-    set: ['include css']
+    'include css': true
   };
   
   return gulp.src('css/app.styl')
