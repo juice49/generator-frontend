@@ -1,19 +1,31 @@
 module.exports = function(yo) {
-  return  [
+  
+  var dependencies = [
     'gulp',
     'gulp-util',
-    'vinyl-source-stream',
-    'gulp-streamify',
     'gulp-plumber',
+    'vinyl-source-stream',
+    'vinyl-transform',
+    'pretty-hrtime',
     'gulp-livereload',
     'gulp-stylus',
     'gulp-autoprefixer',
     'gulp-csso',
-    'browserify',
-    'es6ify',
+    'watchify',
+    'exorcist',
     'gulp-uglify',
     'http-server',
-    'gulp-jade',
     'gulp-livereload'
   ];
+  
+  if(yo.useEs6ify) {
+    dependencies.push('es6ify');
+  }
+  
+  if(yo.useJade) {
+    dependencies.push('gulp-jade');
+  }
+  
+  return dependencies;
+  
 };

@@ -56,13 +56,17 @@ FrontendGenerator.prototype.askFor = function() {
     _this = this,
     cb = this.async();
 
-  console.log(this.yeoman);
+  //console.log(this.yeoman);
 
   this.prompt(prompts, function(props) {
 
     _(props).forEach(function(value, prop) {
       _this[prop] = value;
     });
+    
+    if(typeof _this.useExpandobem === 'undefined') {
+      _this.useExpandobem = false;
+    }
 
     cb();
 
@@ -82,20 +86,23 @@ FrontendGenerator.prototype.projectfiles = function() {
 
   this.mkdir('js');
   this.mkdir('css');
+  this.mkdir('css/components');
   this.mkdir('img');
-  this.mkdir('components');
   this.mkdir('build');
 
   this.template('package.json');
   this.template('gulpfile.js');
   this.copy('gitignore', '.gitignore');
   this.copy('css/app.styl');
-  this.copy('css/dependencies.styl');
-  this.copy('js/index.js');
+  this.copy('js/app.js');
 
-  this.template('views/partials/html.jade');
-  this.template('views/layouts/base.jade');
-  this.template('views/index.jade');
+  if(this.useJade) {
+    this.template('views/partials/html.jade');
+    this.template('views/layouts/base.jade');
+    this.template('views/index.jade');
+  } else {
+    this.template('index.html');
+  }
 
 };
 

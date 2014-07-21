@@ -5,6 +5,27 @@ module.exports = [
     default: 'My Awesome Project'
   },
   {
+    name: 'useJade',
+    type: 'confirm',
+    message: 'Would you like to use Jade?',
+    default: true
+  },
+  {
+    when: function(res) {
+      return res.useJade;
+    },
+    name: 'useExpandobem',
+    type: 'confirm',
+    message: 'Would you like to use ExpandOBem?',
+    default: true
+  },
+  {
+    name: 'useEs6ify',
+    type: 'confirm',
+    message: 'Would you like to use es6ify?',
+    default: false
+  },
+  {
     name: 'useJquery',
     type: 'confirm',
     message: 'Would you like to use jQuery?',
@@ -35,7 +56,8 @@ module.exports = [
   },
   {
     name: 'git',
-    message: 'Would you like me to initialise a git repository?',
+    type: 'confirm',
+    message: 'Would you like to initialise a git repository?',
     default: true
   }
 ];
